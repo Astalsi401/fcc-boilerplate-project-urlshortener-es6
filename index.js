@@ -23,23 +23,27 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-app.post("/api/shorturl", (req, res, next) => {
-  createShortUrlAndSave(req.body.url, (err, data) => {
-    if (err) next(err);
+app.post("/api/shorturl", async (req, res, next) => {
+  try {
+    const data = await createShortUrlAndSave(req.body.url);
     res.json(data);
-  });
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get("/api/shorturl/:short_url", (req, res, next) => {
-  const { short_url } = req.params;
-  getOriginalUrl(short_url, (err, data) => {
-    if (err) next(err);
+app.get("/api/shorturl/:short_url", async (req, res, next) => {
+  try {
+    const { short_url } = req.params;
+    const data = await getOriginalUrl(short_url);
     if (data) {
       res.redirect(data);
     } else {
       res.json({ error: "No short url found" });
     }
-  });
+  } catch (err) {
+    next(err);
+  }
 });
 
 const port = process.env.PORT || 3000;
