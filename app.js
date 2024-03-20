@@ -11,7 +11,7 @@ const Url = mongoose.model("Url", urlSchema);
 
 const createShortUrlAndSave = async (original_url, done) => {
   try {
-    if (/^(https?:)\/\/w{3}\.\w+\.\w+/.test(original_url)) done(null, { error: "invalid url" });
+    if (!/^(https?:)\/\/\w+/.test(original_url)) return done(null, { error: "invalid url" });
     const res = await Url.findOne({ original_url });
     if (res) return done(null, { original_url, short_url: res.short_url });
     const maxShortUrl = await Url.find()
@@ -28,8 +28,7 @@ const createShortUrlAndSave = async (original_url, done) => {
 const getOriginalUrl = async (short_url, done) => {
   try {
     const res = await Url.findOne({ short_url });
-    if (!res) return done(null, null);
-    done(null, res.original_url);
+    done(null, res?.original_url || null);
   } catch (err) {
     done(err);
   }

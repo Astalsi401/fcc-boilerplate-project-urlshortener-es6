@@ -34,8 +34,11 @@ app.get("/api/shorturl/:short_url", (req, res, next) => {
   const { short_url } = req.params;
   getOriginalUrl(short_url, (err, data) => {
     if (err) next(err);
-    if (data) res.redirect(data);
-    res.json({ error: "No short URL found" });
+    if (data) {
+      res.redirect(data);
+    } else {
+      res.json({ error: "No short url found" });
+    }
   });
 });
 
